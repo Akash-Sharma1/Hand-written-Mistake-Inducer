@@ -22,7 +22,7 @@ Spelling mistakes are introduced via following operations:
 Any of the operation is randomly applied on a random word from a given sentence, and the resulting word can be placed back in its correct place.
 
 This program relies on phonetics and jellybean python librarie.
-Sound codes are generated via Soundex, Demetaphone algorithms which are provided by "phonectincs" library
+Sound codes are generated via Soundex, Demetaphone algorithms which are provided by "phonetics" library
 https://pypi.org/project/phonetics/
 distance between the words is calculated via jaro wrinkler algorithm which is provided by "jellybean" library
 https://jellyfish.readthedocs.io/en/latest/
