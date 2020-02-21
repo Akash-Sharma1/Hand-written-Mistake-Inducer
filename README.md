@@ -2,9 +2,12 @@
 
 This Program takes an sentence as an Input and Outputs a line with one or more spelling mistakes.
 
-Usage
+Usage:
+
 % pip install -r requirements.txt
+
 % python Main.py
+
 
 Spelling mistakes are introduced via following operations:
 
