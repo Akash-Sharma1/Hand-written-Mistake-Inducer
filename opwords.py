@@ -1,39 +1,41 @@
 import random
-import meta
-
-def anyvowels(word):
-    count = 0
-    for i in word:
-        if i == 'A' or i == 'E' or i == 'I' or i == 'O' or i == 'U':
-            count+= 1
-    return count
-    
-def isvowel(letter):
-    return (letter == 'A' or letter == 'E' or letter == 'I' or letter == 'O' or letter == 'U')
-
+import phonetics,jellyfish
 
 def is_punctuation(letter):
-    return (ord(letter) < 97 and ord(letter) >=  97+26) and ( ord(letter) < 65 and ord(letter) >= 65+26 )
+    return (ord(letter) < 97 or ord(letter) >=  97+26) and ( ord(letter) < 65 or ord(letter) >= 65+26 ) and ( ord(letter) < 48 or ord(letter) >= 48+10 ) 
+
+def isdigit(letter):
+    return (ord(letter) >= 48 and ord(letter) <48+10)
+
+def alldigits(word):
+    for i in word:
+        if isdigit(i)==False:
+            return False
+    return True 
 
 def repeatletter(word):
+    if(len(word)==0):
+        return word
     count = 0
     rand = random.randrange(0,len(word),1)
-    while( is_punctuation(word[rand]) == True ):
+    while( is_punctuation(word[rand]) == True or isdigit(word[rand]) == True ):
         rand = random.randrange(0,len(word),1)
         if count>len(word):
             return word
+        count+=1
     word = word[0:rand]+word[rand]+word[rand]+word[rand+1:len(word)]
     return word
 
 def jumblewords(word):
-    if len(word)<= 1:
+    if len(word)<= 2:
         return repeatletter(word)
     count = 0
-    rand = random.randrange(0,len(word)-1,1)
-    while( is_punctuation(word[rand]) == True or is_punctuation(word[rand+1]) == True):
+    rand = random.randrange(1,len(word)-1,1)
+    while( is_punctuation(word[rand]) == True or is_punctuation(word[rand+1]) == True or word[rand]==word[rand+1]):
         rand = random.randrange(0,len(word)-1,1)
         if count>len(word):
             return word
+        count+=1
 
     word = word[0:rand]+word[rand+1]+word[rand]+word[rand+2:len(word)]
     return word
@@ -49,6 +51,27 @@ def make2cons1(word):
     if flag == 1:
         return jumblewords(word)
     return final
+
+def changedigits(word):
+    for i in range(len(word)):
+        if (isdigit(word[i])):
+            mod=random.randrange(1,len(word)+1,1)
+            if (i+1)%mod == 0:
+                rand=random.randrange(0,10,1)
+                word=word[0:i-1]+str(rand)+word[i+1:len(word)]
+                return word
+    return word
+
+def removepunct(word):
+    if(len(word) == 0):
+        return word
+    for i in range(len(word)):
+        if is_punctuation(word[i])  ==  True:
+            mod=random.randrange(1,len(word)+1,1)
+            if (i+1)%mod == 0:
+                word=word[0:i]+word[i+1:len(word)]
+                return word
+    return word
 
 global lines
 
@@ -74,9 +97,9 @@ def infile(word):
 
 global dic
 dic = {
-    'A':['','E','J','Y','H','U','W','AU','O','I','OA','AW','AI','A'],
+    'A':['','E','J','Y','U','AU','O','I','OA','AW','AI','A'],
     'B':['','P','D','E','B'],
-    'C':['','X','K','CK','Q','QUE','S','SC','SE','TC','TCH','C'],
+    'C':['','K','CK','Q','QUE','S','SC','SE','TC','TCH','C'],
     'D':['','B','P','ED','ET','T','D'],
     'E':['','IE','EI','I','A','EE','L','O','B','W','E'],
     'F':['','PH','B','UGH','F'],
@@ -88,7 +111,7 @@ dic = {
     'L':['','W','E','U','LV','L'],
     'M':['','UM','AM','EM','MN','MB','M'],
     'N':['','NN','N'],
-    'O':['','A','W','W','AU','E','OA','OW','OUGH','U','EW','OE','OW','UI','OO','O'],
+    'O':['','A','W','AU','E','OA','OW','OUGH','U','EW','OE','OW','UI','OO','O'],
     'P':['','F','B','P','PP'],
     'Q':['','K','QUE','Q'],
     'R':['','RR','RE','R'],
@@ -113,32 +136,30 @@ def init(word,code):
 
 def getsound(word):
     if word != "-1":
-        return meta.dmetaphone(word)[0]
+        return phonetics.dmetaphone(word)[0]
     else:
         return ""
 
 def getchange(word_a,word_b):
-    return meta.jaro_winkler(word_a,word_b,10,10)
+    return jellyfish.jaro_winkler(word_a,word_b)
 
+global ans
 def generate(word , pos):
     global orig_word
     global orig_code
+    global ans
     if pos == len( orig_word ):
-        if word == "":
+        if len(word) == 0:
             ans = []
         x = getchange(orig_word , word)
-        y = getchange(orig_word , ans)
-
         if orig_word !=  word and len(word) > 0 and orig_code == getsound(word):
             if x >=  .94:
-                print( word , getchange(orig_word , word) , "%")
                 ans.append( (x,word) )
             elif x > .80 and infile(word) == True:
-                print( word , getchange(orig_word , word) , "%")
                 ans.append((x*2,word))
         return ans
 
-    if dic.get(orig_word[pos],'"-1') == "-1":
+    if dic.get(orig_word[pos],'-1') == '-1':
         ans = generate(word , pos+1)
         ans = generate(word + orig_word[pos] , pos+1)
         return ans
