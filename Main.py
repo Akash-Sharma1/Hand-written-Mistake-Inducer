@@ -11,7 +11,7 @@ def make_mistake(word):
     
     rand = random.randrange(1,5,1)
     ans = []
-    if rand  ==  1 and len(word)<=6 and opwords.alldigits(word)==False:
+    if rand  ==  1 and len(word)<6 and opwords.alldigits(word)==False:
         ans = opwords.generate("",0)
         if len(ans) > 0:
             index = random.randrange(max(len(ans)-5,0),len(ans),1)

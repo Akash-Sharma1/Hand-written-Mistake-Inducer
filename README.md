@@ -1,5 +1,6 @@
 # Spelling Error Generator
 
+Description:
 This Program takes an sentence as an Input and Outputs a line with one or more spelling mistakes.
 
 Usage:
@@ -9,6 +10,12 @@ Usage:
 % python Main.py
 
 
+Steps:
+1. Intall requirements
+2. Run the Main.py file
+3. Input a sentence
+
+Working:
 Spelling mistakes are introduced via following operations:
 
 0. removing punctuations randomly
